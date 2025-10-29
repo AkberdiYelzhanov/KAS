@@ -18,10 +18,10 @@ app.use(bodyParser.json());
 // --- ВАЖНО: Настройка подключения к вашей базе данных ---
 // Замените эти значения на ваши реальные данные от PostgreSQL
 const pool = new Pool({
-  user: 'your_db_user',       // Имя пользователя БД
+  user: 'postgres',       // Имя пользователя БД
   host: 'localhost',
   database: 'auth_db',         // Имя вашей базы данных
-  password: 'your_db_password', // Пароль от пользователя БД
+  password: 'admin', // Пароль от пользователя БД
   port: 5432,
 });
 
