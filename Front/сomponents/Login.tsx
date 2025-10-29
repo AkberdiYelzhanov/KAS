@@ -22,18 +22,34 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess, toggleView }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
 
-    // --- Имитация входа без бэкенда ---
-    if (email === 'user@example.com' && password === 'password') {
-      // Успешный вход
-      onLoginSuccess({ email: email });
-    } else {
-      // Ошибка входа
-      setError('Неверный логин или пароль');
+    try {
+        const response = await fetch('http://localhost:3001/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Не удалось войти');
+        }
+
+        onLoginSuccess({ email: data.email });
+
+    } catch (err) {
+        setError(err instanceof Error ? err.message : 'Произошла ошибка сети');
+    } finally {
+        setIsLoading(false);
     }
   };
 
@@ -45,7 +61,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess, toggleView }) => {
         </h2>
         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
           или{' '}
-          <button onClick={toggleView} className="font-medium text-primary-600 hover:text-primary-500 focus:outline-none bg-transparent border-none cursor-pointer">
+          <button onClick={toggleView} className="font-medium text-primary-600 hover:text-primary-500 focus:outline-none bg-transparent border-none cursor-pointer" disabled={isLoading}>
             создайте новый
           </button>
         </p>
@@ -63,7 +79,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess, toggleView }) => {
               autoComplete="email"
               required
               className="appearance-none rounded-none relative block w-full px-3 py-3 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-              placeholder="Логин (user@example.com)"
+              placeholder="Логин"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -79,7 +95,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess, toggleView }) => {
               autoComplete="current-password"
               required
               className="appearance-none rounded-none relative block w-full px-3 py-3 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-              placeholder="Пароль (password)"
+              placeholder="Пароль"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -111,9 +127,10 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess, toggleView }) => {
         <div>
           <button
             type="submit"
-            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-300"
+            disabled={isLoading}
+            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-300 disabled:bg-primary-400"
           >
-            Войти
+            {isLoading ? 'Вход...' : 'Войти'}
           </button>
         </div>
       </form>

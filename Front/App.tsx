@@ -21,7 +21,7 @@ const App: React.FC = () => {
 
 
   if (user) {
-    return <Dashboard user={user} onLogout={handleLogout} />;
+    return <Dashboard onLogout={handleLogout} />;
   }
 
   return (
