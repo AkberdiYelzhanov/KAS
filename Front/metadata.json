@@ -1,5 +1,0 @@
-{
-  "name": "Login and Registration System",
-  "description": "A full-featured authentication system created with React and Tailwind CSS. The frontend sends real API requests for login/registration and manages user session state, displaying a dashboard upon successful login.",
-  "requestFramePermissions": []
-}
